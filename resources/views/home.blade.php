@@ -1,10 +1,14 @@
 <x-app-layout>
-    <section class="bg-white">
-        <div class="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8">
-            <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+    <section
+        id="hero"
+        class="bg-gray-900 bg-cover bg-center"
+        style="background-image: linear-gradient(rgba(17, 24, 39, 0.5), rgba(17, 24, 39, 0.5)), url('{{ asset('images/heros/laravel-light-code-hero.png') }}');"
+    >
+        <div class="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8">
+            <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">
                 Hi, I'm {{ config('app.name') }}.
             </h1>
-            <p class="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+            <p class="mx-auto mt-4 max-w-2xl text-lg text-gray-200">
                 I build software and enjoy working across the stack. This is where I keep my
                 resume, projects, and a bit about how I work.
             </p>
@@ -17,7 +21,7 @@
                 </a>
                 <a
                     href="mailto:hello@example.com"
-                    class="rounded-md px-5 py-3 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2"
+                    class="rounded-md px-5 py-3 text-sm font-semibold text-white ring-1 ring-inset ring-white/40 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
                 >
                     Get in touch
                 </a>
