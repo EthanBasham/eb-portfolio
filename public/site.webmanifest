@@ -1,0 +1,19 @@
+{
+    "name": "Ethan Basham",
+    "short_name": "Ethan Basham",
+    "icons": [
+        {
+            "src": "/images/favicons/favicon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/favicons/favicon-500x500.png",
+            "sizes": "500x500",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone"
+}
