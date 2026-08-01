@@ -1,8 +1,12 @@
 <header class="bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center justify-between">
-            <a href="{{ route('home') }}" class="text-lg font-semibold text-brand-600">
-                {{ config('app.name') }}
+        <div class="flex flex-wrap items-center justify-between gap-y-2 py-2 md:flex-nowrap">
+            <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <img src="{{ asset('images/logos/keyboard-climber-400x400.png') }}" alt="" class="h-[75px] w-[75px] rounded-md" width="75" height="75">
+                <span class="flex flex-col leading-tight">
+                    <span class="text-lg font-semibold text-brand-600">{{ config('app.name') }}</span>
+                    <span class="text-sm text-gray-500">Senior Full-Stack Software Engineer</span>
+                </span>
             </a>
 
             <button
@@ -16,39 +20,39 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
             </button>
+
+            <nav id="nav-menu" class="nav-menu w-full md:w-auto md:py-0" aria-label="Primary">
+                <div class="flex flex-col gap-1 py-2 md:flex-row md:items-center md:justify-end md:gap-6 md:py-0">
+                    <a
+                        href="{{ route('home') }}"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('home') ? 'text-brand-600' : '' }}"
+                    >
+                        Home
+                    </a>
+
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            Profile
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                                Log Out
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
+                            Log In
+                        </a>
+                        <a href="{{ route('register') }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-500">
+                            Register
+                        </a>
+                    @endauth
+                </div>
+            </nav>
         </div>
-
-        <nav id="nav-menu" class="nav-menu md:py-0" aria-label="Primary">
-            <div class="flex flex-col gap-1 py-2 md:flex-row md:items-center md:justify-end md:gap-6 md:py-0">
-                <a
-                    href="{{ route('home') }}"
-                    class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('home') ? 'text-brand-600' : '' }}"
-                >
-                    Home
-                </a>
-
-                @auth
-                    <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                        Dashboard
-                    </a>
-                    <a href="{{ route('profile.edit') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                        Profile
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                            Log Out
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                        Log In
-                    </a>
-                    <a href="{{ route('register') }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-500">
-                        Register
-                    </a>
-                @endauth
-            </div>
-        </nav>
     </div>
 </header>

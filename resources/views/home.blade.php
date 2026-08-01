@@ -2,7 +2,7 @@
     <section
         id="hero"
         class="bg-gray-900 bg-cover bg-center"
-        style="background-image: linear-gradient(rgba(17, 24, 39, 0.5), rgba(17, 24, 39, 0.5)), url('{{ asset('images/heros/laravel-light-code-hero.png') }}');"
+        style="background-image: linear-gradient(rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.6)), url('{{ asset('images/heros/laravel-light-code-hero.png') }}');"
     >
         <div class="mx-auto max-w-7xl px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8">
             <h1 class="text-4xl font-bold tracking-tight text-white sm:text-5xl">
