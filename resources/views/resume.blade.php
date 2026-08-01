@@ -91,7 +91,7 @@
                     <h4 class="font-semibold text-gray-900">Brockport Research Institute</h4>
                     <span class="text-sm text-gray-500">December 2019 &mdash; Current</span>
                 </div>
-                <p class="mt-1 text-sm font-medium text-gray-800">Self-Employed Independent Contractor</p>
+                <p class="mt-3 font-medium text-gray-800">Self-Employed Independent Contractor</p>
                 <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-gray-700">
                     <li>Designed, developed, and maintained a Laravel-based CMS supporting day-to-day business operations.</li>
                     <li>Gathered requirements directly from stakeholders and translated business needs into technical solutions.</li>
