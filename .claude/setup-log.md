@@ -349,3 +349,38 @@ Verified: fast path (already running) skips sudo; stopped Postgres via
 `sudo systemctl stop postgresql` and confirmed `composer run ensure-postgres` detects it
 and starts it back up; full `composer run dev` chain boots cleanly with the new step
 running first.
+
+## 2026-08-01 — /resume page
+
+Read the supplied PDF (`public/docs/Resume - Ethan Basham.pdf`) directly via Claude's PDF
+support, then brainstormed the approach with the user before building anything (plan mode).
+Decisions:
+
+- Dedicated `/resume` HTML page mirroring the PDF's content, not a homepage section or
+  PDF-only link — better for SEO/screen readers/browsing friction. Nav "Resume" link goes
+  to the page, which has a "Download PDF" button near the top (one nav item, not two).
+- **Privacy**: explicitly excluded phone number and email from the public, search-indexed
+  page — user's call, since once a search engine crawls/caches a phone number it's hard to
+  scrub. Location (Murfreesboro, TN) stays. Guarded by a Pest test
+  (`tests/Feature/ResumeTest.php`) asserting neither appears in the response body, so a
+  future edit can't silently reintroduce them.
+- Renamed the PDF from `Resume - Ethan Basham.pdf` to `resume-ethan-basham.pdf` (spaces in
+  a public URL are asking for encoding bugs; matches the project's existing kebab-case
+  asset naming like `laravel-code-hero-light.png`).
+- `/resume` route is a closure in `routes/web.php`, matching the existing `/dashboard`
+  pattern (no controller — no model/logic behind a static content page, would be an empty
+  wrapper).
+- Noticed `resources/views/projects/show.blade.php` uses a `prose` class, but
+  `@tailwindcss/typography` was never installed, so that class has silently done nothing
+  since it was written. Didn't fix it (out of scope) but avoided repeating it on the new
+  page — used explicit utility classes instead, matching what's actually functional.
+- Explicitly deferred: the homepage's "Get in touch" button still points at a leftover
+  placeholder email (`hello@example.com`) from scaffolding, not the real one. Flagged to
+  the user; they want it left alone for now rather than wired up, given the same privacy
+  reasoning as above.
+
+Also found and cleaned up a stale `public/hot` file left over from an earlier
+`composer run dev` test in this session — its presence makes Laravel's `@vite()` directive
+try to load assets from a Vite dev server on :5173 instead of the built `public/build`
+files, silently breaking styling/JS on every page until removed or `npm run dev` is
+actually running.

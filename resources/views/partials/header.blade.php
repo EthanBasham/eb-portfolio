@@ -30,6 +30,13 @@
                         Home
                     </a>
 
+                    <a
+                        href="{{ route('resume') }}"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('resume') ? 'text-brand-600' : '' }}"
+                    >
+                        Resume
+                    </a>
+
                     @auth
                         <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
                             Dashboard
