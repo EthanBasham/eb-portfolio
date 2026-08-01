@@ -9,8 +9,9 @@
                 Hi, I'm {{ config('app.name') }}.
             </h1>
             <p class="mx-auto mt-4 max-w-2xl text-lg text-gray-200">
-                I build software and enjoy working across the stack. This is where I keep my
-                resume, projects, and a bit about how I work.
+                I have spent the past 9 years building business-critical web applications for
+                multiple companies with Laravel/PHP on AWS. I have owned every part of the
+                projects I've managed, and I pride myself on cutting costs without cutting corners.
             </p>
             <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 <a
