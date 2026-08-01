@@ -318,3 +318,34 @@ commit when explicitly asked).
 Final verification pass: `php artisan migrate:fresh --seed`, `npm run build`, and
 `composer validate` all clean (the only validate warnings are the expected "exact version
 constraints" advisories, which are intentional here).
+
+## 2026-08-01 — Ensure PostgreSQL is running before `composer run dev`
+
+Postgres is already `systemctl enable`d so it should auto-start when WSL's systemd boots,
+but that's not a hard guarantee. Added a belt-and-suspenders check tied to the dev
+workflow itself.
+
+Checked first (read-only) before designing this: `pg_isready`/`service`/`systemctl` are
+all installed, and this user already has passwordless sudo system-wide (`sudo -l` →
+`(ALL) NOPASSWD: ALL`, likely a default from the WSL image's cloud-init provisioning) — so
+`sudo service postgresql start` never blocks on a password prompt. No sudoers changes
+needed.
+
+Added `scripts/ensure-postgres.sh` (executable): checks `pg_isready` first and skips
+`sudo` entirely when Postgres is already up (the common case — avoids unnecessary sudo
+overhead on every single `composer run dev`); only runs `sudo service postgresql start`
+when it's actually down, then polls `pg_isready` for up to 5s and fails loudly
+(non-zero exit, clear stderr message) if it still isn't reachable, rather than silently
+continuing into `php artisan serve` and failing later with a confusing DB error.
+
+Wired into `composer.json` as a new `ensure-postgres` script, prepended as the first step
+of both `dev` and `setup` (the latter also runs migrations, so it has the same latent
+need) — using `"@ensure-postgres"` as the first array entry, not Composer's
+`pre-<name>-cmd` event-hook convention, since sequential array composition is the more
+certain/unambiguous mechanism. Ran `composer update --lock` afterward to refresh
+`composer.lock`'s content-hash to match the changed `composer.json`.
+
+Verified: fast path (already running) skips sudo; stopped Postgres via
+`sudo systemctl stop postgresql` and confirmed `composer run ensure-postgres` detects it
+and starts it back up; full `composer run dev` chain boots cleanly with the new step
+running first.
