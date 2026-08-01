@@ -162,3 +162,11 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+## Project conventions (not managed by Boost)
+
+- Log significant scaffolding/config/tooling changes (installs, env setup, decisions with
+  non-obvious rationale) in `.claude/setup-log.md` as you make them, appending — don't
+  summarize retroactively. This is outside the `<laravel-boost-guidelines>` block above on
+  purpose: `php artisan boost:install` regenerates that block's contents and has wiped
+  this file once before (see the note at the top of `setup-log.md` itself).
