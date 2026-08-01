@@ -123,6 +123,8 @@
                 <li class="rounded-full bg-gray-100 px-3 py-1 text-gray-700">Stakeholder Management</li>
                 <li class="rounded-full bg-gray-100 px-3 py-1 text-gray-700">Agile Development</li>
                 <li class="rounded-full bg-gray-100 px-3 py-1 text-gray-700">Public Speaking</li>
+                <li class="rounded-full bg-gray-100 px-3 py-1 text-gray-700">AI Augmentation</li>
+                <li class="rounded-full bg-gray-100 px-3 py-1 text-gray-700">Team Dynamics</li>
             </ul>
         </section>
     </div>
