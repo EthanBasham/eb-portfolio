@@ -1,0 +1,31 @@
+@use 'variables' as vars;
+@use 'mixins';
+
+// Mobile nav toggle button — the jQuery example in resources/js/app.js
+// adds/removes the .is-open class on the menu this controls.
+.nav-toggle {
+    transition: transform vars.$transition-fast;
+
+    &[aria-expanded='true'] {
+        transform: rotate(90deg);
+    }
+}
+
+.nav-toggle__label {
+    @include mixins.visually-hidden;
+}
+
+.nav-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height vars.$transition-base;
+
+    &.is-open {
+        max-height: 24rem;
+    }
+
+    @include mixins.respond-above(vars.$breakpoint-md) {
+        max-height: none;
+        overflow: visible;
+    }
+}

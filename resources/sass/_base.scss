@@ -1,0 +1,10 @@
+// Base-level overrides that don't belong as Tailwind utility classes.
+
+html {
+    scroll-behavior: smooth;
+}
+
+::selection {
+    background-color: var(--color-brand-100);
+    color: var(--color-brand-900);
+}

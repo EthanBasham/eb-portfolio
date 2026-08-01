@@ -1,0 +1,21 @@
+@use 'variables' as vars;
+
+@mixin respond-above($breakpoint) {
+    @media (min-width: $breakpoint) {
+        @content;
+    }
+}
+
+// Visually hides content for screen readers only — used for accessible
+// labels on icon-only controls (e.g. the mobile nav toggle).
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

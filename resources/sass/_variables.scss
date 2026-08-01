@@ -1,0 +1,13 @@
+// Design tokens that live outside Tailwind's utility system (Tailwind's own
+// tokens are defined via @theme in resources/css/app.css). Use this file for
+// values custom SASS components/mixins need to reference.
+
+$breakpoint-sm: 640px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 1024px;
+
+$transition-fast: 150ms ease-in-out;
+$transition-base: 250ms ease-in-out;
+
+$z-header: 40;
+$z-modal: 50;
