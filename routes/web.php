@@ -10,6 +10,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
 Route::get('/resume', function () {
     return view('resume');
 })->name('resume');

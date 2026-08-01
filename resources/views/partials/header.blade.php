@@ -31,6 +31,13 @@
                     </a>
 
                     <a
+                        href="{{ route('about') }}"
+                        class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('about') ? 'text-brand-600' : '' }}"
+                    >
+                        About
+                    </a>
+
+                    <a
                         href="{{ route('resume') }}"
                         class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('resume') ? 'text-brand-600' : '' }}"
                     >

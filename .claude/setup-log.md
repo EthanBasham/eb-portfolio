@@ -384,3 +384,26 @@ Also found and cleaned up a stale `public/hot` file left over from an earlier
 try to load assets from a Vite dev server on :5173 instead of the built `public/build`
 files, silently breaking styling/JS on every page until removed or `npm run dev` is
 actually running.
+
+## 2026-08-01 — /about page + public domain images
+
+New `/about` page (personal background, coding origin story, hobbies) — content was
+curated collaboratively with the user from their raw notes rather than invented; two
+things deliberately left out per their explicit call: age at HS graduation (dropped
+entirely — the "self-taught" trait is shown via the internship story instead) and
+church/faith detail (trimmed from a full paragraph to one line, paired with the
+public-speaking angle since that reinforces the Resume page's "Public Speaking" strength).
+
+User asked for "public domain" images (a Rhode Island Red chicken, indoor climbing holds).
+First candidates found via Wikimedia Commons searches turned out to be CC-BY-SA 3.0 and
+CC-BY 2.0 — legally distinct from public domain (both still require attribution; BY-SA
+also requires share-alike) — caught this before using them rather than treating
+"Creative Commons" as synonymous with "public domain." Found genuinely CC0-licensed
+alternatives via the Openverse API (`api.openverse.org`, filtered `license=pdm,cc0`),
+which surfaces license metadata directly and is far more reliable than scraping Commons
+category pages by hand. Downloaded candidates and *viewed* them (not just checked
+HTTP 200/file type) before picking, same lesson as the earlier Bondware logo near-miss.
+
+Images are actually WebP despite originating from `.jpg`-looking rawpixel URLs (rawpixel's
+`editor_1024` endpoint always serves WebP) — saved with a `.webp` extension to match the
+real format rather than mislabeling them, in `public/images/about/`.
