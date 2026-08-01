@@ -36,28 +36,6 @@
                     >
                         Resume
                     </a>
-
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                            Dashboard
-                        </a>
-                        <a href="{{ route('profile.edit') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                            Profile
-                        </a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                                Log Out
-                            </button>
-                        </form>
-                    @else
-                        <a href="{{ route('login') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
-                            Log In
-                        </a>
-                        <a href="{{ route('register') }}" class="rounded-md bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-500">
-                            Register
-                        </a>
-                    @endauth
                 </div>
             </nav>
         </div>

@@ -3,10 +3,15 @@
         <div class="flex flex-col items-center justify-between gap-4 text-sm text-gray-500 md:flex-row">
             <p>&copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.</p>
 
-            <nav aria-label="Footer" class="flex gap-6">
+            <nav aria-label="Footer" class="flex items-center gap-6">
                 <a href="{{ route('home') }}" class="hover:text-gray-700">Home</a>
                 @guest
                     <a href="{{ route('login') }}" class="hover:text-gray-700">Log In</a>
+                @else
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="hover:text-gray-700">Log Out</button>
+                    </form>
                 @endguest
             </nav>
         </div>
