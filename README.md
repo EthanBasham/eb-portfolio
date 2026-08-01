@@ -1,4 +1,4 @@
-# eb-portfolio
+# Ethan Basham - Portfolio Site
 
 Personal portfolio hub — resume, projects, and (eventually) blog-style content. Built with
 Laravel 13, Blade, Tailwind CSS v4, SASS, and jQuery.
@@ -134,14 +134,3 @@ compiled from `resources/sass/app.scss` → the mobile nav toggle is wired up by
 `.claude/setup-log.md` has a full log of the commands run and decisions made while
 scaffolding this project (toolchain install, version pinning, Tailwind v4 migration
 notes, etc.).
-
-## Next steps
-
-- Personalize `APP_NAME` and the homepage copy in `resources/views/home.blade.php`
-  (currently placeholder text).
-- Add real resume/cover-letter/about content — these are static Blade for now; making
-  them editable is a good candidate for the next phase, once you're ready to build the
-  auth-gated content editor.
-- Provision the AWS-hosted PostgreSQL instance for production and point the deployed
-  `.env` at it (no code changes needed — only `DB_*` values).
-- Add a project image storage disk (currently `image_path` on `Project` is unused).
