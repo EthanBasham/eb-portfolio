@@ -407,3 +407,138 @@ HTTP 200/file type) before picking, same lesson as the earlier Bondware logo nea
 Images are actually WebP despite originating from `.jpg`-looking rawpixel URLs (rawpixel's
 `editor_1024` endpoint always serves WebP) — saved with a `.webp` extension to match the
 real format rather than mislabeling them, in `public/images/about/`.
+
+## 2026-08-02 — Editable Pages system (About + Resume)
+
+Built via full plan-mode cycle. Researched editor options given the site's constraints
+(Blade-only, no SPA framework): picked **Trix** (Basecamp, actively maintained, pure
+vanilla JS) over TipTap (leans on React/Vue ecosystem despite a headless core) and Quill
+(development stalled). Added `stevebauman/purify` for sanitizing WYSIWYG content on save
+(one new dependency, clear stated reason, per the project's "flag new deps" convention).
+
+**Design pivot mid-plan**, proposed by the user and clearly better than the original
+plan: instead of forcing everything into generic rich-text prose (which would have
+degraded Resume's bespoke card/tag-pill layout to plain formatting), `pages` got a
+`format` column (`wysiwyg` | `raw`, backed by a PHP enum `App\Enums\PageFormat`):
+- `wysiwyg` (About): Trix editor, sanitized via `Purify::clean()` on save, rendered
+  inside a Tailwind Typography `prose` wrapper. This also finally makes the `prose` class
+  sitting inert in `projects/show.blade.php` (noted, never fixed, back during the About
+  images work) meaningful project-wide, since `@tailwindcss/typography` is now installed.
+- `raw` (Resume): plain `<textarea>` for HTML source, content stored and rendered
+  verbatim, deliberately **not** sanitized — same trust level as editing a Blade file
+  directly, since only the Admin-gated route can reach it. Resume's exact current markup
+  was copied in as-is; the one `asset()` call was resolved to a literal root-relative
+  path (`/docs/resume-ethan-basham.pdf`) since raw content renders via `{!! !!}`, not
+  re-parsed as Blade.
+
+**Real technical discovery mid-implementation**: grepped Trix's compiled bundle
+(`node_modules/trix/dist/trix.umd.js`) for `img`/`figure` handling and found zero matches
+— confirmed Trix has no support for plain `<img>` tags, only its own upload-attachment
+format (out of scope for v1). This meant the About page's two images (added a few
+sessions back) would silently vanish the moment the page was edited through Trix. Flagged
+to the user before proceeding rather than guessing; decided to drop them from the
+migrated content for now rather than pick a workaround unilaterally.
+
+**Gate**: `Gate::define('manage-pages', fn (User $user) => $user->hasRole('Admin'))` in
+`AppServiceProvider::boot()` — ties directly into the `roles` system added last session.
+Routes `/pages/{page:slug}/edit` and `PUT /pages/{page:slug}` are behind
+`['auth', 'can:manage-pages']`. Public `/about` and `/resume` URLs/route names kept
+exactly as before (just now resolve a `Page` by slug and render one shared
+`pages/show.blade.php` instead of dedicated Blade files) — zero breaking changes to nav
+links or bookmarks.
+
+Deleted `resources/views/about.blade.php` and `resources/views/resume.blade.php`,
+superseded by the generic template. Updated the pre-existing `AboutTest.php`/
+`ResumeTest.php` to seed via the new `PageSeeder` first, rather than relying on
+hardcoded Blade content that no longer exists.
+
+**Environment note**: `php artisan test` (and `./vendor/bin/pest` directly) started
+silently producing zero output and exiting 1 partway through this session — traced to
+`laravel/pao` (a Boost devDependency that wraps CLI output for nicer AI-agent-formatted
+results — the `{"tool":"pest",...}` JSON seen throughout this whole log) throwing
+`stream_filter_remove(): Unable to flush filter, not removing` internally and swallowing
+all output via its exception handler. Not caused by anything in this change — `Pint
+--format agent` (which also goes through pao) kept working fine throughout, so the bug is
+specific to pao's interaction with Pest's own output buffering, not pao generally. Fix:
+run tests with `PAO_DISABLE=1 php artisan test` when this happens — pao has a documented
+env-var opt-out (`vendor/laravel/pao/src/Autoload.php`).
+
+## 2026-08-02 — Swapped Trix for Quill
+
+User didn't like Trix's editing experience and asked to swap to Quill, plus get the About
+page images back (dropped in the previous session specifically because Trix couldn't
+represent them). Two things worth recording:
+
+- **Quill 2.0.3 (latest) has an unpatched low-severity XSS advisory** in its HTML export
+  feature (CVE-2025-15056, GHSA-v3m3-f69x-jf25) — `npm audit` flagged it immediately after
+  install. No patched version exists above it; the advisory itself recommends downgrading.
+  Pinned to **2.0.2** instead (`npm audit` clean at that version).
+- **Verified Quill's image handling directly against its installed source** before
+  committing to the swap (`node_modules/quill/formats/image.js`,
+  `node_modules/quill/modules/clipboard.js`) rather than assuming it would "just work"
+  better than Trix: `Image.tagName = 'IMG'` is registered in Parchment's blot registry,
+  and Quill's HTML-to-Delta conversion (`matchBlot`) matches elements by tag name via that
+  registry — completely separate from `Image.match(url)`, which only gates paste-URL
+  auto-detection (converting a pasted plain-text URL into an embed), not existing `<img>`
+  tag parsing. Confirms plain `<img>` tags of any extension (including `.webp`) survive
+  being loaded into and re-saved from a Quill editor. Also confirmed HTMLPurifier's
+  default profile preserves `<img src>/<img alt>` while still stripping `<script>`, via a
+  real end-to-end save as the `ebasham` account.
+
+Quill needs manual JS wiring (unlike Trix's zero-config custom element): initializes on
+`#editor-container` in `resources/js/app.js`, loads initial content via
+`quill.clipboard.dangerouslyPasteHTML()`, syncs `quill.root.innerHTML` into the hidden
+`#content` field on form submit.
+
+**Nice unplanned side effect**: Quill's default toolbar image button reads a local file
+and embeds it as a base64 data URI directly — no upload endpoint needed, unlike Trix's
+attachment system. This closes the "image upload out of scope for v1" gap from the
+previous session for free. Tradeoff noted directly in the edit form: base64 images bloat
+the stored HTML (not cached/separate files), fine for occasional images, not a real media
+library.
+
+Restored the two About images (Rhode Island Red hen, climbing holds) into
+`PageSeeder::aboutContent()` at their original positions, each wrapped in its own `<p>`
+matching how Quill itself represents a standalone image within its block model.
+
+## 2026-08-02 — Third page format: Markdown
+
+`PageFormat` enum gained `Markdown = 'md'` (+ a `label()` method used for the edit form's
+radio labels). No migration needed — `format` was already a plain `string` column, not a
+DB-level enum, specifically so new formats wouldn't require schema changes.
+
+Markdown-to-HTML happens at **render** time, not save time — `Page::renderedContent()`
+calls `Str::markdown()` (League CommonMark, a direct `laravel/framework` dependency, not
+one we added) with `html_input => escape` and `allow_unsafe_links => false` explicitly set
+rather than trusted as defaults. This means markdown content doesn't need
+`stevebauman/purify` sanitization on save the way wysiwyg HTML does — raw HTML typed into
+markdown source gets escaped to literal visible text by CommonMark's own safe rendering,
+not stored as executable markup in the first place. Verified this explicitly (not just
+assumed): `<script>` typed into markdown source renders as escaped literal text, both via
+a direct `Str::markdown()` call and through a real end-to-end save as the admin account.
+
+**Format became mutable** — previously fixed at seed time, now the edit form's three
+radio buttons ("Rich Editor"/"Markdown"/"Raw HTML") let the admin change a page's format
+on any save, and `UpdatePageRequest` validates it against the enum via `Rule::enum()`.
+Added `format` to `Page`'s `#[Fillable]` list, which it previously didn't need since
+nothing wrote to it outside the seeder — omitting it would have made `format` silently
+fail to persist via `$page->update([...])` due to mass-assignment guarding.
+
+**Edit form now hosts three separate content editors** (Quill, a Markdown textarea, a raw
+HTML textarea) sharing one page, toggled by the format radios via jQuery show/hide —
+initial visibility is set server-side in Blade (matching the page's current format) rather
+than relying purely on JS after page load, both to avoid a flash of all three editors
+before JS runs and to guarantee Tailwind's build actually sees the `hidden` utility class
+in template source. Only one `content` field is actually submitted; its value is copied
+from whichever editor matches the currently-selected radio right before the form submits.
+Switching formats doesn't attempt to convert content between them (e.g. HTML→Markdown) —
+each editor keeps its own independent content; out of scope, and a genuinely hard,
+lossy problem if attempted.
+
+**Debugging note, not a bug**: mid-verification, login with the original seeded
+`ebasham@bondware.com` credentials started failing. Traced it to the account's email
+having changed to `ethan_basham@outlook.com` — the user had evidently updated their own
+profile through the actual UI while testing earlier in the session (password and Admin
+role were untouched). Not something to guard against; just a reminder that local
+verification scripts holding hardcoded credentials will drift out of sync with real usage
+of the live app.

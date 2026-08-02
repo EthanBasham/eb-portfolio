@@ -1,6 +1,10 @@
 <?php
 
+use Database\Seeders\PageSeeder;
+
 it('displays the resume page successfully', function () {
+    $this->seed(PageSeeder::class);
+
     $response = $this->get(route('resume'));
 
     $response->assertOk();
@@ -8,6 +12,8 @@ it('displays the resume page successfully', function () {
 });
 
 it('does not expose a phone number or personal email on the public page', function () {
+    $this->seed(PageSeeder::class);
+
     $response = $this->get(route('resume'));
 
     $response->assertOk();

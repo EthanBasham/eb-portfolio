@@ -1,5 +1,14 @@
+/*
+ * Quill's own theme CSS isn't Tailwind-layered, so at equal specificity it
+ * would actually beat the `prose` classes applied to the editor (unlayered
+ * CSS outranks layered CSS in a tie, per the cascade layers spec). Importing
+ * it into Tailwind's own `base` layer keeps it lower priority than the
+ * typography plugin's styles, same as everywhere else on the site.
+ */
+@import 'quill/dist/quill.snow.css' layer(base);
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
 
 /*
  * Tailwind v4 auto-detects template files by scanning the project root

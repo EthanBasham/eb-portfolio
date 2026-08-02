@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import $ from 'jquery';
+import Quill from 'quill';
 
 window.Alpine = Alpine;
 window.jQuery = window.$ = $;
@@ -46,6 +47,66 @@ $(function () {
         if (!ticking) {
             window.requestAnimationFrame(updateHeroParallax);
             ticking = true;
+        }
+    });
+});
+
+// Page-edit form: three content editors (Quill, Markdown textarea, raw HTML
+// textarea) share the page, one per format. The format radios show/hide
+// whichever one is active; on submit, the active editor's content gets
+// copied into the single #content field that's actually sent to the server.
+$(function () {
+    const $container = $('#editor-container');
+    const $radios = $('.format-radio');
+    const $field = $('#content');
+
+    if (!$container.length || !$radios.length) {
+        return;
+    }
+
+    // Quill's default image toolbar button reads a local file and embeds it
+    // as a base64 data URI directly, so it works without any upload
+    // endpoint — fine for occasional images, not a real media library.
+    const quill = new Quill($container[0], {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ header: [2, 3, false] }],
+                ['bold', 'italic', 'blockquote', 'code'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image'],
+                ['clean'],
+            ],
+        },
+    });
+
+    // Match the typography the public page renders with, so the editor
+    // looks like the thing it's editing.
+    $(quill.root).addClass('prose prose-gray max-w-none');
+    quill.clipboard.dangerouslyPasteHTML($('#wysiwyg-initial').val());
+
+    const $editors = $('.format-editor');
+
+    const showActiveEditor = () => {
+        const format = $radios.filter(':checked').val();
+
+        $editors.each(function () {
+            $(this).toggleClass('hidden', $(this).data('format') !== format);
+        });
+    };
+
+    $radios.on('change', showActiveEditor);
+    showActiveEditor();
+
+    $field.closest('form').on('submit', function () {
+        const format = $radios.filter(':checked').val();
+
+        if (format === 'wysiwyg') {
+            $field.val(quill.root.innerHTML);
+        } else if (format === 'md') {
+            $field.val($('#markdown-editor').val());
+        } else {
+            $field.val($('#raw-editor').val());
         }
     });
 });
